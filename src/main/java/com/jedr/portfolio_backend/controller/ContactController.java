@@ -7,6 +7,13 @@ import org.springframework.web.bind.annotation.*;
 import com.jedr.portfolio_backend.dto.ContactRequest;
 import com.jedr.portfolio_backend.service.EmailService;
 
+@CrossOrigin(
+    origins = {
+        "https://johnelmarrodrigo.netlify.app",
+        "http://localhost:3000"
+    }
+)
+    
 @RestController
 @RequestMapping("/api/contact")
 @CrossOrigin(origins = "*") // allow Netlify frontend
