@@ -1,46 +1,52 @@
 package com.jedr.portfolio_backend.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.jedr.portfolio_backend.dto.ContactRequest;
 
 @Service
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    private final WebClient webClient;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    @Value("${BREVO_API_KEY}")
+    private String brevoApiKey;
 
-    public EmailService(JavaMailSender mailSender) {
-        this.mailSender = mailSender;
+    public EmailService(WebClient.Builder builder) {
+        this.webClient = builder
+                .baseUrl("https://api.brevo.com")
+                .build();
     }
 
     public void sendContactEmail(ContactRequest request) {
-        try {
-            SimpleMailMessage mail = new SimpleMailMessage();
 
-            mail.setFrom(fromEmail); // REQUIRED for Gmail
-            mail.setTo("johnelmar88@gmail.com");
-            mail.setSubject("Portfolio: " + request.getSubject());
-
-            mail.setText(
+        Map<String, Object> body = Map.of(
+            "sender", Map.of(
+                "name", "Portfolio Contact",
+                "email", "no-reply@portfolio.dev"   // Brevo allows this by default
+            ),
+            "to", List.of(
+                Map.of("email", "johnelmar88@gmail.com")
+            ),
+            "subject", "Portfolio: " + request.getSubject(),
+            "textContent",
                 "Name: " + request.getName() +
                 "\nEmail: " + request.getEmail() +
                 "\n\nMessage:\n" + request.getMessage()
-            );
+        );
 
-            mailSender.send(mail);
-
-            System.out.println(">>> EMAIL SENT SUCCESSFULLY");
-
-        } catch (Exception e) {
-            System.out.println(">>> EMAIL FAILED");
-            e.printStackTrace();
-            throw new RuntimeException("Email sending failed");
-        }
+        webClient.post()
+            .uri("/v3/smtp/email")
+            .header("api-key", brevoApiKey)
+            .header("Content-Type", "application/json")
+            .bodyValue(body)
+            .retrieve()
+            .bodyToMono(String.class)
+            .block();
     }
 }
