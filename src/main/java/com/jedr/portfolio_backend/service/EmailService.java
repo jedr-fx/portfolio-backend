@@ -1,3 +1,14 @@
+package com.jedr.portfolio_backend.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+
+import com.jedr.portfolio_backend.dto.ContactRequest;
+
 @Service
 public class EmailService {
 
@@ -15,18 +26,18 @@ public class EmailService {
     public void sendContactEmail(ContactRequest request) {
 
         Map<String, Object> body = Map.of(
-            // ✅ VERIFIED sender (YOU)
+            // VERIFIED sender (YOU – must be verified in Brevo)
             "sender", Map.of(
                 "name", "Portfolio Contact",
-                "email", "johnelmar88@gmail.com"   // must be verified in Brevo
+                "email", "johnelmar88@gmail.com"
             ),
 
-            // ✅ EMAIL GOES TO YOU
+            // Email goes to YOU
             "to", List.of(
                 Map.of("email", "johnelmar88@gmail.com")
             ),
 
-            // ✅ OPTIONAL: when you click "Reply", it replies to recruiter
+            // Reply goes to recruiter/client
             "replyTo", Map.of(
                 "email", request.getEmail(),
                 "name", request.getName()
