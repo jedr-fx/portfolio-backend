@@ -23,6 +23,7 @@ public class ContactController {
             @Valid @RequestBody ContactRequest request) {
 //        System.out.println("CONTACT API HIT: " + request.getEmail());
         emailService.sendContactEmail(request);
-        return ResponseEntity.ok("Message sent successfully");
+        return ResponseEntity.ok("Thank you! Your message has been sent.");
+
     }
 }
