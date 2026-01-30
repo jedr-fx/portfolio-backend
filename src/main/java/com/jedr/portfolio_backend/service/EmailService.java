@@ -36,7 +36,7 @@ public class EmailService {
             "to", List.of(
                 Map.of("email", "johnelmar88@gmail.com")
             ),
-
+  System.out.println("Contact email sent successfully");
             // Reply goes to recruiter/client
             "replyTo", Map.of(
                 "email", request.getEmail(),
@@ -50,6 +50,8 @@ public class EmailService {
                 "Name: " + request.getName() + "\n" +
                 "Email: " + request.getEmail() + "\n\n" +
                 "Message:\n" + request.getMessage()
+          
+
         );
 
         webClient.post()
